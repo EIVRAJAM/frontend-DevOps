@@ -16,6 +16,7 @@ interface FuncionalidadDetailModalProps {
 export const FuncionalidadDetailModal: React.FC<FuncionalidadDetailModalProps> = ({ isOpen, onClose, funcionalidad, onUpdateSuccess }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!funcionalidad) return null;
 
@@ -26,7 +27,7 @@ export const FuncionalidadDetailModal: React.FC<FuncionalidadDetailModalProps> =
       setIsEditing(false);
       onUpdateSuccess();
     } catch (err: any) {
-      alert('Error updating funcionalidad');
+      setError('Error al actualizar la funcionalidad');
     } finally {
       setIsUpdating(false);
     }

@@ -141,6 +141,7 @@ const SidebarNavItem: React.FC<SidebarItemProps> = ({ item, isExpanded }) => {
 
 export const Sidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const hasStaffAssignments = useStaffAssignments();
   const { logout } = useLogout();
   const user = useAuthStore(state => state.user);
@@ -159,13 +160,13 @@ export const Sidebar: React.FC = () => {
     });
   }
 
-  return (
-    <aside className={`${isExpanded ? 'w-64' : 'w-[84px]'} h-screen bg-gray-900/50 backdrop-blur-3xl border-r border-white/10 flex flex-col transition-all duration-300 relative z-30 shrink-0`}>
+  const sidebarContent = (
+    <>
       <div className="h-20 flex items-center justify-between px-6 border-b border-white/5 overflow-hidden shrink-0">
         <div className={`font-bold text-xl tracking-widest text-white truncate transition-opacity duration-300 ${!isExpanded && 'opacity-0 w-0'}`}>
           DevOps<span className="text-indigo-500">App</span>
         </div>
-        <button onClick={() => setIsExpanded(!isExpanded)} className="text-gray-400 hover:text-indigo-400 transition-colors p-1.5 rounded-lg hover:bg-white/5 shrink-0">
+        <button onClick={() => { setIsExpanded(!isExpanded); setIsMobileOpen(false); }} className="text-gray-400 hover:text-indigo-400 transition-colors p-1.5 rounded-lg hover:bg-white/5 shrink-0">
           <Menu size={22} />
         </button>
       </div>
@@ -189,6 +190,30 @@ export const Sidebar: React.FC = () => {
           {isExpanded && <span className="truncate">Cerrar Sesión</span>}
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <button
+        onClick={() => setIsMobileOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-gray-900/80 border border-white/10 text-gray-400 hover:text-white transition-colors"
+      >
+        <Menu size={22} />
+      </button>
+
+      {isMobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
+      )}
+
+      <aside className={`
+        ${isExpanded ? 'w-64' : 'w-[84px]'}
+        h-screen bg-gray-900/50 backdrop-blur-3xl border-r border-white/10 flex flex-col transition-all duration-300 relative z-30 shrink-0
+        hidden lg:flex
+        ${isMobileOpen ? '!flex fixed inset-y-0 left-0 z-50 w-64' : ''}
+      `}>
+        {sidebarContent}
+      </aside>
+    </>
   );
 };

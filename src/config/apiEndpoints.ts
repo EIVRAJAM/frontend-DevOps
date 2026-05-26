@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
     BLOQUEAR: (id: number) => `/api/v1/usuarios/${id}/bloquear`,
     CURRENT_USER: '/api/v1/usuarios/id',
     ORGANIZADOR: (id: number) => `/api/v1/usuarios/${id}/organizador`,
+    SEARCH_ORGANIZADOR: '/api/v1/usuarios/organizador',
     COMPLETE_STATUS: '/api/v1/usuarios/complete-status',
   },
   ACCESOS: {

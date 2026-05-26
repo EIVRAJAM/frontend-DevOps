@@ -16,6 +16,7 @@ export const AccesoDetailModal: React.FC<AccesoDetailModalProps> = ({ isOpen, on
   const [newPassword, setNewPassword] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   if (!acceso) return null;
 
@@ -31,7 +32,7 @@ export const AccesoDetailModal: React.FC<AccesoDetailModalProps> = ({ isOpen, on
       await accesoService.cambiarPasswordAdmin(acceso.idUsuario, { passwordNueva: newPassword });
       setIsEditing(false);
       setNewPassword('');
-      alert('Contraseña actualizada con éxito');
+      setSuccess(true);
     } catch (err: any) {
       setError('No se pudo actualizar la contraseña.');
     } finally {
@@ -131,13 +132,20 @@ export const AccesoDetailModal: React.FC<AccesoDetailModalProps> = ({ isOpen, on
               </div>
             </div>
           ) : (
-            <div className="flex justify-end">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2 hover:bg-white/10 text-sm text-gray-300 transition-colors"
-              >
-                <KeyRound size={14} className="text-blue-400" /> Cambiar Contraseña
-              </button>
+            <div className="space-y-3">
+              {success && (
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-400">
+                  Contraseña actualizada con éxito
+                </div>
+              )}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2 hover:bg-white/10 text-sm text-gray-300 transition-colors"
+                >
+                  <KeyRound size={14} className="text-blue-400" /> Cambiar Contraseña
+                </button>
+              </div>
             </div>
           )}
         </div>

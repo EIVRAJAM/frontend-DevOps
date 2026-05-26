@@ -19,6 +19,7 @@ export default function CheckInPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const messageTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const fetchResumen = async () => {
     try {
@@ -66,6 +67,14 @@ export default function CheckInPage() {
       inputRef.current.focus();
     }
   }, [isLoading, estadoCheckIn]);
+
+  useEffect(() => {
+    if (message) {
+      clearTimeout(messageTimer.current);
+      messageTimer.current = setTimeout(() => setMessage(null), 3000);
+    }
+    return () => clearTimeout(messageTimer.current);
+  }, [message]);
 
   const executeCheckIn = async (code: string) => {
     if (!code.trim()) return;

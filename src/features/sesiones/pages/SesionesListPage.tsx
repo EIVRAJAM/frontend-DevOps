@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Search, ShieldAlert, Eye } from 'lucide-react';
+import { Modal } from '../../../components/ui/Modal';
 import { PageHeader } from '../../../components/ui/PageHeader';
 import { DataTable, ColumnDef } from '../../../components/ui/DataTable';
 import { Badge } from '../../../components/ui/Badge';
@@ -12,15 +13,15 @@ export default function SesionesListPage() {
   const { sesiones, pagination, isLoading, error, fetch, applyFilters, deleteSesion } = useSesiones();
   const { isAdmin } = usePermissions();
   const [viewItem, setViewItem] = useState<SesionResponseDto | null>(null);
+  const [disconnectId, setDisconnectId] = useState<number | null>(null);
 
   useEffect(() => {
     fetch();
   }, [fetch]);
 
   const handleDelete = (idSesion: number) => {
-    if (confirm('¿Estás seguro de forzar el cierre de esta sesión? Esto invalidará el token del usuario.')) {
-      deleteSesion(idSesion);
-    }
+    deleteSesion(idSesion);
+    setDisconnectId(null);
   };
 
   const columns: ColumnDef<SesionResponseDto>[] = [
@@ -120,9 +121,26 @@ export default function SesionesListPage() {
         isOpen={!!viewItem} 
         onClose={() => setViewItem(null)} 
         sesion={viewItem} 
-        onDisconnect={handleDelete}
+        onDisconnect={(id) => setDisconnectId(id)}
         isAdmin={isAdmin}
       />
+
+      <Modal isOpen={disconnectId !== null} onClose={() => setDisconnectId(null)} title="Forzar Desconexión" size="sm">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+            <ShieldAlert size={20} className="text-red-400 shrink-0" />
+            <p className="text-sm text-red-300">¿Estás seguro de forzar el cierre de esta sesión? Esto invalidará el token del usuario.</p>
+          </div>
+          <div className="flex justify-end gap-3">
+            <button onClick={() => setDisconnectId(null)} className="rounded-xl bg-white/5 border border-white/10 px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors">
+              Cancelar
+            </button>
+            <button onClick={() => disconnectId && handleDelete(disconnectId)} className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 transition-colors">
+              Forzar Desconexión
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

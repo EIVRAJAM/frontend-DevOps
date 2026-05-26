@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Shield, Clock, Calendar, KeyRound, Mail, Phone, Hash, Pencil, X, Save, Loader2, AlertTriangle } from 'lucide-react';
+import { User, Shield, Clock, Calendar, KeyRound, Mail, Phone, Hash, Pencil, X, Save, Loader2 } from 'lucide-react';
 import { PageHeader } from '../../../components/ui/PageHeader';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { ChangePasswordForm } from '../../auth/components/ChangePasswordForm';
@@ -11,13 +11,14 @@ import { SesionResponseDto } from '../../sesiones/types/sesion.types';
 const inputClass = 'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition focus:border-indigo-500/60';
 const labelClass = 'block text-xs font-medium text-gray-400 mb-1.5';
 
+type ActiveView = 'view' | 'edit' | 'password';
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UsuarioResponse | null>(null);
   const [lastSession, setLastSession] = useState<SesionResponseDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [activeView, setActiveView] = useState<ActiveView>('view');
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -55,12 +56,7 @@ export default function ProfilePage() {
     setFormGenero(profile.genero || '');
     setFormFechaNac(profile.fechaNacimiento || '');
     setSaveError(null);
-    setIsEditing(true);
-  };
-
-  const cancelEditing = () => {
-    setIsEditing(false);
-    setSaveError(null);
+    setActiveView('edit');
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -76,7 +72,7 @@ export default function ProfilePage() {
         genero: (formGenero as 'masculino' | 'femenino') || undefined,
         fechaNacimiento: formFechaNac || undefined,
       });
-      setIsEditing(false);
+      setActiveView('view');
       await fetchProfile();
     } catch (err: any) {
       setSaveError(err.response?.data?.message || 'Error al actualizar el perfil.');
@@ -103,21 +99,26 @@ export default function ProfilePage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2">
           <div className="rounded-2xl border border-white/5 bg-gray-900/30 p-6 backdrop-blur-xl">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
                 <User size={28} className="text-indigo-400" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h2 className="text-xl font-bold text-white">
                   {profile.nombres} {profile.apellidos}
                 </h2>
                 <p className="text-sm text-gray-400">ID: {profile.idUsuario}</p>
               </div>
+              {activeView !== 'view' && (
+                <button onClick={() => setActiveView('view')} className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm text-red-400 transition hover:bg-red-500/20">
+                  <X size={16} /> Cancelar
+                </button>
+              )}
             </div>
 
-            {isEditing ? (
+            {activeView === 'edit' && (
               <form onSubmit={handleSave} className="space-y-4">
                 {saveError && (
                   <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{saveError}</div>
@@ -152,17 +153,22 @@ export default function ProfilePage() {
                     <input type="date" value={formFechaNac} onChange={(e) => setFormFechaNac(e.target.value)} className={inputClass} />
                   </div>
                 </div>
-                <div className="flex justify-end gap-3 pt-2">
-                  <button type="button" onClick={cancelEditing} className="rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 transition-colors">
-                    Cancelar
-                  </button>
-                  <button type="submit" disabled={isSaving} className="rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors">
-                    {isSaving ? <Loader2 size={16} className="animate-spin inline mr-2" /> : <Save size={16} className="inline mr-2" />}
+                <div className="pt-2">
+                  <button type="submit" disabled={isSaving} className="w-full rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                     {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                   </button>
                 </div>
               </form>
-            ) : (
+            )}
+
+            {activeView === 'password' && (
+              <div>
+                <ChangePasswordForm />
+              </div>
+            )}
+
+            {activeView === 'view' && (
               <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                 <DetailField icon={<Hash size={14} />} label="ID Usuario" value={String(profile.idUsuario)} />
                 <DetailField icon={<Hash size={14} />} label="Documento" value={profile.documento} />
@@ -207,26 +213,22 @@ export default function ProfilePage() {
               <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Acciones</h3>
             </div>
             <div className="space-y-3">
-              {!isEditing && (
-                <button
-                  onClick={startEditing}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 transition-colors text-left flex items-center gap-2"
-                >
-                  <Pencil size={14} className="text-indigo-400" />
-                  Editar Perfil
-                </button>
-              )}
-              {showPasswordForm ? (
-                <ChangePasswordForm />
-              ) : (
-                <button
-                  onClick={() => setShowPasswordForm(true)}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 transition-colors text-left flex items-center gap-2"
-                >
-                  <KeyRound size={14} className="text-blue-400" />
-                  Cambiar Contraseña
-                </button>
-              )}
+              <button
+                onClick={startEditing}
+                disabled={activeView !== 'view'}
+                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 transition-colors text-left flex items-center gap-2 disabled:opacity-30"
+              >
+                <Pencil size={14} className="text-indigo-400" />
+                Editar Perfil
+              </button>
+              <button
+                onClick={() => setActiveView('password')}
+                disabled={activeView !== 'view'}
+                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 transition-colors text-left flex items-center gap-2 disabled:opacity-30"
+              >
+                <KeyRound size={14} className="text-blue-400" />
+                Cambiar Contraseña
+              </button>
             </div>
           </div>
         </div>

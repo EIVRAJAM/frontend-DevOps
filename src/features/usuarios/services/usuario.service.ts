@@ -108,4 +108,12 @@ export const usuarioService = {
     const { data } = await axiosInstance.get<CompleteStatusResponse>(API_ENDPOINTS.USUARIOS.COMPLETE_STATUS);
     return data;
   },
+
+  // GET /api/v1/usuarios/organizador
+  searchOrganizador: async (params: { nombres?: string; size?: number }): Promise<PageResponse<UsuarioOrganizadorResponse>> => {
+    const { data } = await axiosInstance.get<PageResponse<UsuarioOrganizadorResponse>>(API_ENDPOINTS.USUARIOS.SEARCH_ORGANIZADOR, {
+      params: { ...params, page: 0 },
+    });
+    return data;
+  },
 };

@@ -106,8 +106,8 @@ export const StripeCheckoutDialog: React.FC<StripeCheckoutDialogProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/80 backdrop-blur-sm">
-      <div className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-gray-950/80 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-gray-900 border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl my-8 animate-in fade-in zoom-in duration-200">
         <h2 className="text-xl font-bold text-white mb-6 text-center">Completa tu pago</h2>
 
         <Elements stripe={stripePromise} options={{ clientSecret, appearance }}>
