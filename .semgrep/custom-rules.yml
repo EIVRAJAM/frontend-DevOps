@@ -1,0 +1,25 @@
+rules:
+  # Detecta tokens/API keys hardcodeados en el cliente Axios
+  - id: axios-hardcoded-auth-header
+    patterns:
+      - pattern: |
+          axios.create({ headers: { Authorization: "..." } })
+    message: "Token hardcodeado en cliente Axios. Usar variables de entorno."
+    severity: ERROR
+    languages: [typescript, javascript]
+
+  # Evita exponer variables de entorno no prefijadas con VITE_ (Vite las ignora, pero el dev puede confundirse)
+  - id: non-vite-env-var
+    pattern: process.env.$VAR
+    message: "Vite usa import.meta.env, no process.env. Verifica que $VAR esté disponible."
+    severity: WARNING
+    languages: [typescript, javascript]
+
+  # localStorage con datos sensibles
+  - id: localstorage-sensitive-data
+    patterns:
+      - pattern: localStorage.setItem("token", ...)
+      - pattern: localStorage.setItem("password", ...)
+    message: "No almacenar credenciales sensibles en localStorage."
+    severity: ERROR
+    languages: [typescript, javascript]
