@@ -1,0 +1,32 @@
+{
+  "content": [
+    {
+      "idEvento": 1,
+      "idUsuarioCreador": 1,
+      "nombreEvento": "Evento 1",
+      "descripcionEvento": "Descripcion del evento",
+      "fechaEvento": "2025-06-15",
+      "horaEvento": "18:00:00",
+      "lugarEvento": "Auditorio Principal",
+      "referenciaUbicacion": "",
+      "imagenUrl": "",
+      "estadoEvento": "BORRADOR",
+      "capacidadMaxima": 100,
+      "tieneParqueadero": true,
+      "cuposParqueadero": 30,
+      "estado": "ACTIVO",
+      "creadoEn": "2025-01-01T00:00:00",
+      "actualizadoEn": "2025-01-01T00:00:00",
+      "esDePago": false,
+      "precio": null,
+      "moneda": null,
+      "capacidadDisponible": 100
+    }
+  ],
+  "totalPages": 1,
+  "totalElements": 1,
+  "number": 0,
+  "size": 10,
+  "first": true,
+  "last": true
+}
